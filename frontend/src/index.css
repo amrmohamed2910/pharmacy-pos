@@ -1,0 +1,282 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-200: #99f6e4;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #2dd4bf;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #115e59;
+  --color-brand-900: #134e4a;
+  --color-brand-950: #042f2e;
+
+  --shadow-soft: 0 1px 2px rgb(16 40 34 / 0.04), 0 8px 24px -12px rgb(16 40 34 / 0.16);
+  --shadow-lift: 0 2px 4px rgb(16 40 34 / 0.05), 0 18px 40px -18px rgb(16 40 34 / 0.28);
+
+  --radius-xl2: 1.15rem;
+}
+
+@theme inline {
+  --color-bg: var(--app-bg);
+  --color-surface: var(--app-surface);
+  --color-surface-2: var(--app-surface-2);
+  --color-surface-3: var(--app-surface-3);
+  --color-line: var(--app-line);
+  --color-ink: var(--app-ink);
+  --color-muted: var(--app-muted);
+}
+
+:root {
+  --app-bg: #f4f7f6;
+  --app-surface: #ffffff;
+  --app-surface-2: #f1f5f3;
+  --app-surface-3: #e6eeeb;
+  --app-line: #e1e9e6;
+  --app-ink: #0e1f1b;
+  --app-muted: #617570;
+  color-scheme: light;
+}
+
+.dark {
+  --app-bg: #07100e;
+  --app-surface: #0e1a17;
+  --app-surface-2: #13221e;
+  --app-surface-3: #1a2d28;
+  --app-line: #1e322d;
+  --app-ink: #e8f3ef;
+  --app-muted: #8aa39c;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    border-color: var(--app-line);
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--app-bg);
+    color: var(--app-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-brand-200);
+    color: var(--color-brand-950);
+  }
+
+  .dark ::selection {
+    background: var(--color-brand-800);
+    color: white;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--app-muted) 35%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--app-muted) 55%, transparent);
+    background-clip: content-box;
+  }
+}
+
+@layer utilities {
+  .nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  .glass {
+    background: color-mix(in oklab, var(--app-surface) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  .brand-gradient {
+    background-image: linear-gradient(135deg, #0f766e 0%, #0d9488 45%, #14b8a6 100%);
+  }
+
+  .mesh {
+    background-image:
+      radial-gradient(at 18% 12%, rgba(45, 212, 191, 0.35) 0px, transparent 55%),
+      radial-gradient(at 82% 8%, rgba(20, 184, 166, 0.28) 0px, transparent 50%),
+      radial-gradient(at 75% 88%, rgba(13, 148, 136, 0.3) 0px, transparent 55%);
+  }
+
+  .grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  .animate-in {
+    animation: fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-scale {
+    animation: scale-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-slide-start {
+    animation: slide-start 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-start {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--app-surface-2);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--app-surface) 65%, transparent),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+/* ---------- Print ---------- */
+[dir="rtl"] .animate-slide-start {
+  animation-name: slide-start-rtl;
+}
+
+@keyframes slide-start-rtl {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-print,
+  .receipt-print * {
+    visibility: visible;
+  }
+
+  .receipt-print {
+    position: fixed !important;
+    inset: 0 auto auto 0;
+    width: 76mm !important;
+    max-height: none !important;
+    padding: 4mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: white !important;
+    color: black !important;
+    overflow: visible !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    margin: 4mm;
+    size: 80mm auto;
+  }
+}
