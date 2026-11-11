@@ -15,6 +15,18 @@ class Settings(BaseSettings):
         "mysql+pymysql://root:@127.0.0.1:3306/pharmacy_db?charset=utf8mb4"
     )
 
+    # بديل لـ DATABASE_URL: متغيرات منفصلة (مفيدة عند النشر على Render/Aiven).
+    # إذا تم ضبط DB_HOST يُبنى رابط الاتصال تلقائيًا وتُهمل DATABASE_URL.
+    db_host: str | None = None
+    db_port: int = 3306
+    db_user: str = "avnadmin"
+    db_password: str = ""
+    db_name: str = "defaultdb"
+
+    # اتصال مشفّر بقاعدة بيانات سحابية (مثل Aiven): مسار شهادة CA و/أو تعطيل التحقق.
+    database_ssl_ca: str | None = None
+    database_ssl_verify: bool = True
+
     jwt_secret: str = "change-me-in-production-3f8c1d9a"
     jwt_algorithm: str = "HS256"
     token_expire_minutes: int = 720

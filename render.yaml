@@ -1,0 +1,35 @@
+# Render Blueprint — نشر نظام صيدليتي على Render
+# المستندات: https://render.com/docs/blueprint-spec
+#
+# عند إنشاء Blueprint من هذا الملف سيطلب منك Render إدخال:
+#   - DATABASE_URL  (رابط اتصال Aiven MySQL)
+# انسخه من لوحة Aiven: Overview > Connection information > Service URI
+# وحوّله إلى الصيغة:
+#   mysql+pymysql://avnadmin:PASSWORD@HOST:PORT/DATABASE?charset=utf8mb4
+# مع ترميز أي رموز خاصة في كلمة المرور (مثل @ => %40).
+services:
+  - type: web
+    name: pharmacy-suite
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    autoDeployTrigger: commit
+    buildCommand: pip install -r backend/requirements.txt && cd frontend && npm ci --include=dev && npm run build
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: NODE_VERSION
+        value: 22
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      # اتصال مشفّر بدون التحقق من شهادة الخادم.
+      # لو أضفت شهادة Aiven كـ Secret File على Render، اجعلها:
+      #   DATABASE_SSL_CA=/etc/secrets/aiven-ca.pem
+      #   DATABASE_SSL_VERIFY=true
+      - key: DATABASE_SSL_VERIFY
+        value: "false"

@@ -104,6 +104,60 @@ npm.cmd run build        # ينتج مجلد dist ويخدمه FastAPI تلقا�
 | `LOW_STOCK_THRESHOLD` | `10` | حد التنبيه لانخفاض المخزون |
 | `EXPIRY_WARNING_DAYS` | `90` | عدد الأيام لتنبيه قرب الانتهاء |
 | `DEFAULT_CURRENCY` | `ج.م` | العملة المعروضة |
+| `DATABASE_SSL_CA` | فارغ | مسار شهادة CA لقاعدة بيانات سحابية مثل Aiven |
+| `DATABASE_SSL_VERIFY` | `true` | التحقق من شهادة الخادم (اجعلها `false` للاتصال المشفّر بدون تحقق) |
+
+---
+
+## النشر على GitHub وRender مع قاعدة بيانات Aiven
+
+المشروع يُنشر كخدمة واحدة: FastAPI يبني واجهة React تلقائيًا ويخدمها من نفس النطاق، ويتصل بقاعدة MySQL المستضافة على Aiven.
+
+### 1) رفع الكود على GitHub
+
+```powershell
+cd D:\Pharmacy
+git add .
+git commit -m "Deploy: Render blueprint and Aiven SSL support"
+git push origin main
+```
+
+المستودع الحالي: <https://github.com/amrmohamed2910/pharmacy-pos>
+
+> ملف `render.yaml` في جذر المشروع يصف الخدمة كاملة، و`render.yaml` لا يحتوي أي كلمات مرور.
+
+### 2) تجهيز قاعدة بيانات Aiven
+
+1. من لوحة Aiven افتح خدمة MySQL ثم **Overview > Connection information**.
+2. أنشئ قاعدة بيانات باسم `pharmacy_db` (أو استخدم `defaultdb`):
+   ```sql
+   CREATE DATABASE pharmacy_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+3. حوّل رابط الخدمة إلى صيغة SQLAlchemy:
+   ```
+   mysql+pymysql://avnadmin:PASSWORD@HOST:PORT/pharmacy_db?charset=utf8mb4
+   ```
+   - استخدم `%40` بدل `@` وأي رموز خاصة أخرى داخل كلمة المرور.
+   - الجداول تُنشأ تلقائيًا عند أول تشغيل، ويُنشأ حساب `admin / admin123` إن لم يوجد.
+
+### 3) النشر على Render
+
+1. من <https://dashboard.render.com> اختر **New > Blueprint** واربط مستودع GitHub.
+2. سيقرأ Render ملف `render.yaml` ويطلب قيمة `DATABASE_URL` — الصق رابط Aiven أعلاه.
+3. اضغط **Apply**. بعد انتهاء البناء سيكون الرابط:
+   `https://pharmacy-suite.onrender.com` (أو الاسم المتاح).
+4. اختياري للأمان: من **Environment** أضف Secret File باسم `aiven-ca.pem` (ملف CA من لوحة Aiven)، ثم غيّر:
+   ```
+   DATABASE_SSL_CA=/etc/secrets/aiven-ca.pem
+   DATABASE_SSL_VERIFY=true
+   ```
+
+### 4) بعد أول نشر
+
+- افتح الرابط وسجّل الدخول بـ `admin / admin123`، ثم غيّر كلمة المرور فورًا من الإعدادات.
+- `JWT_SECRET` يُولَّد تلقائيًا لكل خدمة على Render.
+- الخطة المجانية على Render تُوقف الخدمة بعد 15 دقيقة خمول وتعيد تشغيلها عند أول طلب (قد يستغرق ~30 ثانية).
+- لأي دومين مخصص: أضفه من Render ثم أضف رابطه إلى `CORS_ORIGINS` (اختياري لأن الواجهة والـ API على نفس النطاق).
 
 ---
 
